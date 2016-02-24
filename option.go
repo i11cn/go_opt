@@ -1,6 +1,8 @@
 package option
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/bitly/go-simplejson"
 	"reflect"
@@ -20,6 +22,20 @@ func NewOptions() *Options {
 }
 
 func (o *Options) Marshal() (ret string, err error) {
+	var d []byte
+	if d, err = json.Marshal(o); err == nil {
+		ret = string(d)
+	}
+	return
+}
+
+func (o *Options) MarshalJSON() (ret []byte, err error) {
+	buf := bytes.NewBuffer([]byte{})
+	buf.WriteString("{")
+	if err = o.marshal_json(buf); err == nil {
+		buf.WriteString("}")
+		ret = buf.Bytes()
+	}
 	return
 }
 
@@ -183,6 +199,12 @@ func (o *Options) ParseJsonFile(path string) error {
 func (o *Options) Set(key string, value interface{}) *Options {
 	o.name = key
 	o.value = value
+	return o
+}
+
+func (o *Options) SetValue(value interface{}, key ...string) *Options {
+	use := o.make_path(key...)
+	use.value = value
 	return o
 }
 
