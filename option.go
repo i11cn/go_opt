@@ -9,6 +9,16 @@ import (
 	"strings"
 )
 
+/* 用来测试的数据:
+{
+  "config": {"path": "./logs/", "format":"%T %L %N : %M"},
+  "server": [2,
+    {"host":"192.168.1.10", "port":10000},
+    {"host":"192.168.1.11", "port":10000, "relay":{"host":"192.168.10.10", "port":20000}}
+  ]
+}
+*/
+
 type (
 	Options struct {
 		name  string
