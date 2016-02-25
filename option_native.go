@@ -2,49 +2,73 @@ package option
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/bitly/go-simplejson"
 )
 
+type (
+	option_map   map[string]interface{}
+	option_array []interface{}
+
+	json_value interface {
+		MarshalJSON() ([]byte, error)
+		UnmarshalJSON([]byte) error
+	}
+	json_string string
+	json_number struct {
+		value interface{}
+	}
+	json_bool bool
+	json_null interface{}
+
+	json_array  []json_value
+	json_object struct {
+		name  string
+		value json_value
+	}
+)
+
+func (j *json_string) MarshalJSON() ([]byte, error) {
+	buf := bytes.NewBufferString("\"")
+	buf.WriteString(*(*string)(j))
+	buf.WriteString("\"")
+	return buf.Bytes(), nil
+}
+
+func (j *json_string) UnmarshalJSON(d []byte) error {
+	return nil
+}
+
+func (j *json_number) MarshalJSON() ([]byte, error) {
+	buf := bytes.NewBufferString("")
+	switch v := j.value.(type) {
+	case float32, float64, uint, uint32, uint64, int, int32, int64:
+		buf.WriteString(fmt.Sprint(v))
+	default:
+		return nil, errors.New("not a number format")
+	}
+	return buf.Bytes(), nil
+}
+
+func (j *json_number) UnmarshalJSON(d []byte) error {
+	return nil
+}
+
 func (o *Options) make_path(key ...string) *Options {
 	ret := o
-	for _, k := range key {
-		if c, ok := ret.child[k]; ok {
-			ret = c
-		} else {
-			use := NewOptions()
-			use.name = k
-			ret.child[k] = use
-			ret = use
-		}
-	}
 	return ret
 }
 
+func (o *Options) get_child_by_key(key string, create bool) *Options {
+	return nil
+}
+
+func (o *Options) get_value() (ret interface{}, exist bool) {
+	return nil, false
+}
+
 func (o *Options) marshal_json(buf *bytes.Buffer) error {
-	if o.value == nil && len(o.child) == 0 {
-		return nil
-	}
-	buf.WriteString(fmt.Sprintf("\"%s\":", o.name))
-	if len(o.child) > 0 {
-		buf.WriteString("{")
-		var comma bool = false
-		for _, c := range o.child {
-			if comma {
-				buf.WriteString(", ")
-			}
-			c.marshal_json(buf)
-			comma = true
-		}
-		buf.WriteString("}")
-	} else {
-		switch v := o.value.(type) {
-		case string:
-			buf.WriteString(fmt.Sprintf("\"%s\"", v))
-		default:
-			buf.WriteString(fmt.Sprint(o.value))
-		}
-	}
 	return nil
 }
 
