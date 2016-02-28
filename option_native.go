@@ -2,12 +2,14 @@ package option
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/bitly/go-simplejson"
 )
 
 type (
+	Options2     map[string]interface{}
 	option_map   map[string]interface{}
 	option_array []interface{}
 
@@ -28,6 +30,72 @@ type (
 		value json_value
 	}
 )
+
+func (a []interface{}) dump(indent string) {
+	for _, v := range a {
+		switch use := v.(type) {
+		case map[string]interface{}:
+			fmt.Printf("%s(map[string]interface{})  =\r\n", indent)
+			dump_map(indent+"  ", &use)
+		case []interface{}:
+			fmt.Print("%s([]interface{}) =\r\n", indent)
+			dump_array(indent+"  ", use)
+		default:
+			fmt.Printf("%s(%T) = %v\r\n", indent, use, use)
+		}
+	}
+}
+
+func dump_array(indent string, a []interface{}) {
+	for _, v := range a {
+		switch use := v.(type) {
+		case map[string]interface{}:
+			fmt.Printf("%s(map[string]interface{})  =\r\n", indent)
+			dump_map(indent+"  ", &use)
+		case []interface{}:
+			fmt.Print("%s([]interface{}) =\r\n", indent)
+			dump_array(indent+"  ", use)
+		default:
+			fmt.Printf("%s(%T) = %v\r\n", indent, use, use)
+		}
+	}
+}
+
+func test_json() {
+	str := `{
+  "config": {"path": "./logs/", "format":"%T %L %N : %M"},
+  "server": [2,
+    "/var/www/html",
+	{"host":"192.168.1.10", "port":10000, "enable":false},
+	{"host":"192.168.1.11", "port":10000, "ha":null, "relay":{"host":"192.168.10.10", "port":20000}}
+  ]
+}`
+	j := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(str), &j); err != nil {
+		fmt.Println("转换出错: ", err.Error())
+		return
+	}
+	fmt.Println(j)
+	fmt.Println("====================================")
+	fmt.Println(str)
+	fmt.Println("====================================")
+	dump_map("", &j)
+}
+
+func dump_map(indent string, m *map[string]interface{}) {
+	for k, v := range *m {
+		switch use := v.(type) {
+		case map[string]interface{}:
+			fmt.Printf("%s(map[string]interface{}) - %s =\r\n", indent, k)
+			dump_map(indent+"  ", &use)
+		case []interface{}:
+			fmt.Printf("%s([]interface{}) - %s =", indent, k)
+			dump_array(indent+"  ", use)
+		default:
+			fmt.Printf("%s(%T) - %s = %v\r\n", indent, use, k, use)
+		}
+	}
+}
 
 func (j *json_string) MarshalJSON() ([]byte, error) {
 	buf := bytes.NewBufferString("\"")
