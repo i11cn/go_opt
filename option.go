@@ -33,7 +33,7 @@ func NewOptions() *Options {
 	return &Options{child: map[string]*Options{}}
 }
 
-func (o *Options) Marshal() (ret string, err error) {
+func (o *Options) Json() (ret string, err error) {
 	var d []byte
 	if d, err = json.Marshal(o); err == nil {
 		ret = string(d)
@@ -51,9 +51,9 @@ func (o *Options) MarshalJSON() (ret []byte, err error) {
 	return
 }
 
-func (o *Options) Get(path ...string) *Options {
+func (o *Options) Get(path ...string) interface{} {
 	if o == nil || len(path) == 0 {
-		return o
+		return nil
 	}
 	current := o
 	for _, k := range path {
@@ -229,11 +229,23 @@ func (o *Options) Set(key string, value interface{}) *Options {
 	return o
 }
 
-func (o *Options) SetValue(value interface{}, key ...string) *Options {
+func (o *Options) Replace(key string, value interface{}) *Options {
 	return o
 }
 
-func (o *Options) SetChild(key string, value interface{}) *Options {
+func (o *Options) Append(key string, value interface{}) *Options {
+	return o
+}
+
+func (o *Options) SetPath(value interface{}, path ...string) *Options {
+	return o
+}
+
+func (o *Options) ReplacePath(value interface{}, path ...string) *Options {
+	return o
+}
+
+func (o *Options) AppendPath(value interface{}, path ...string) *Options {
 	return o
 }
 

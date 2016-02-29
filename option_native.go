@@ -31,7 +31,7 @@ type (
 	}
 )
 
-func (a []interface{}) dump(indent string) {
+func dump_array(indent string, a []interface{}) {
 	for _, v := range a {
 		switch use := v.(type) {
 		case map[string]interface{}:
@@ -46,17 +46,17 @@ func (a []interface{}) dump(indent string) {
 	}
 }
 
-func dump_array(indent string, a []interface{}) {
-	for _, v := range a {
+func dump_map(indent string, m *map[string]interface{}) {
+	for k, v := range *m {
 		switch use := v.(type) {
 		case map[string]interface{}:
-			fmt.Printf("%s(map[string]interface{})  =\r\n", indent)
+			fmt.Printf("%s(map[string]interface{}) - %s =\r\n", indent, k)
 			dump_map(indent+"  ", &use)
 		case []interface{}:
-			fmt.Print("%s([]interface{}) =\r\n", indent)
+			fmt.Printf("%s([]interface{}) - %s =", indent, k)
 			dump_array(indent+"  ", use)
 		default:
-			fmt.Printf("%s(%T) = %v\r\n", indent, use, use)
+			fmt.Printf("%s(%T) - %s = %v\r\n", indent, use, k, use)
 		}
 	}
 }
@@ -80,21 +80,6 @@ func test_json() {
 	fmt.Println(str)
 	fmt.Println("====================================")
 	dump_map("", &j)
-}
-
-func dump_map(indent string, m *map[string]interface{}) {
-	for k, v := range *m {
-		switch use := v.(type) {
-		case map[string]interface{}:
-			fmt.Printf("%s(map[string]interface{}) - %s =\r\n", indent, k)
-			dump_map(indent+"  ", &use)
-		case []interface{}:
-			fmt.Printf("%s([]interface{}) - %s =", indent, k)
-			dump_array(indent+"  ", use)
-		default:
-			fmt.Printf("%s(%T) - %s = %v\r\n", indent, use, k, use)
-		}
-	}
 }
 
 func (j *json_string) MarshalJSON() ([]byte, error) {
@@ -129,6 +114,10 @@ func (o *Options) make_path(key ...string) *Options {
 }
 
 func (o *Options) get_child_by_key(key string, create bool) *Options {
+	return nil
+}
+
+func (o *Options) get_child_by_key2(create bool, path ...string) interface{} {
 	return nil
 }
 
