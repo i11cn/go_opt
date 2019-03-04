@@ -1,7 +1,10 @@
 package option
 
 import (
-	"github.com/i11cn/go_json"
+	"bytes"
+	"fmt"
+	"os"
+	"reflect"
 )
 
 /*
@@ -18,99 +21,43 @@ import (
 */
 
 type (
-	Options json.Json
+	Item string
+
+	CommandParser struct {
+		options map[string]Item
+		types   []reflect.Type
+	}
 )
 
-func NewOptions() *Options {
-	return (*Options)(json.NewJson())
+func Parse(cmd ...[]string) *CommandParser {
+	ret := &CommandParser{}
+	ret.parse(cmd...)
+	return ret
 }
 
-func (o *Options) Get(path ...string) *Options {
-	return (*Options)((*json.Json)(o).Get(path...))
-}
-
-func (o *Options) Exist(path ...string) bool {
-	return o.Get(path...) != nil
-}
-
-func (o *Options) String() (string, bool) {
-	return (*json.Json)(o).String()
-}
-
-func (o *Options) Int() (ret int, ok bool) {
-	return (*json.Json)(o).Int()
-}
-
-func (o *Options) UInt() (ret uint, ok bool) {
-	return (*json.Json)(o).UInt()
-}
-
-func (o *Options) Int64() (ret int64, ok bool) {
-	return (*json.Json)(o).Int64()
-}
-
-func (o *Options) UInt64() (ret uint64, ok bool) {
-	return (*json.Json)(o).UInt64()
-}
-
-func (o *Options) Float() (ret float32, ok bool) {
-	return (*json.Json)(o).Float()
-}
-
-func (o *Options) Float64() (ret float64, ok bool) {
-	return (*json.Json)(o).Float64()
-}
-
-func (o *Options) Bool() (ret bool, ok bool) {
-	return (*json.Json)(o).Bool()
-}
-
-func (o *Options) ParseJsonFile(path string) error {
-	return nil
-}
-
-func (o *Options) Set(key string, value interface{}) *Options {
-	(*json.Json)(o).Set(key, value)
-	return o
-}
-
-func (o *Options) Replace(key string, value interface{}) *Options {
-	return o
-}
-
-func (o *Options) Append(key string, value interface{}) *Options {
-	return o
-}
-
-func (o *Options) SetPath(value interface{}, path ...string) *Options {
-	return o
-}
-
-func (o *Options) ReplacePath(value interface{}, path ...string) *Options {
-	return o
-}
-
-func (o *Options) AppendPath(value interface{}, path ...string) *Options {
-	return o
-}
-
-func (o *Options) Merge(o2 *Options) *Options {
-	(*json.Json)(o).Merge((*json.Json)(o2))
-	return o
-}
-
-func (o *Options) ParseJson(js string) (err error) {
-	var j *json.Json
-	if j, err = json.FromString(js); err == nil {
-		(*json.Json)(o).Merge(j)
+func (cp *CommandParser) parse(cmd ...[]string) {
+	cp.options = make(map[string]Item)
+	use := os.Args
+	if len(cmd) > 0 {
+		use = cmd[0]
 	}
-	return
+	for _, arg := range use {
+		fmt.Println(arg)
+	}
 }
 
-func (o *Options) ParseIniFile(path string) error {
+func (cp *CommandParser) Bind(t ...reflect.Type) {
+}
+
+func (cp *CommandParser) Usage() string {
+	ret := &bytes.Buffer{}
+	return ret.String()
+}
+
+func (cp *CommandParser) Get(out interface{}) error {
 	return nil
 }
 
-func (o *Options) ParseCommand() *Options {
-	return o
+func (cp *CommandParser) proc_type(t reflect.Type) error {
+	return nil
 }
