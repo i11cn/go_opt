@@ -8,19 +8,6 @@ import (
 	"strings"
 )
 
-/*
-用来测试的数据:
-
-{
-  "config": {"path": "./logs/", "format":"%T %L %N : %M"},
-  "server": [2,
-    "/var/www/html",
-    {"host":"192.168.1.10", "port":10000},
-    {"host":"192.168.1.11", "port":10000, "relay":{"host":"192.168.10.10", "port":20000}}
-  ]
-}
-*/
-
 type (
 	Item string
 
@@ -296,7 +283,6 @@ func (cp *CommandParser) proc_type(t reflect.Type) error {
 			return nil
 		}
 	}
-	// 此处处理t的Tags
 	for i := 0; i < struct_type.NumField(); i++ {
 		f := struct_type.Field(i)
 		if tag, exist := f.Tag.Lookup("cmd"); exist {
