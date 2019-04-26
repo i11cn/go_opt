@@ -40,7 +40,7 @@ t := flag_value{}
 opt.Bind(reflect.TypeOf(t))
 ```
 
-**可以把NewParser和Bind结合起来**
+- 可以把NewParser和Bind结合起来
 
 示例:
 
@@ -52,6 +52,8 @@ type flag_value struct {
 t := flag_value{}
 opt, _ := option.NewParser(reflect.TypeOf(t))
 ```
+
+- 解析
 
 **CommandParser.Parse**
 
@@ -66,6 +68,8 @@ opt.Parse()
 ```
 opt.Parse([]string{"-H", "192.168.1.1", "--port", "12345"})
 ```
+
+- 获取结果
 
 **CommandParser.Get**
 
