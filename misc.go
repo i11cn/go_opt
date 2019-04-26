@@ -1,7 +1,6 @@
 package option
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -115,7 +114,7 @@ func (s StringConverter) ToBool() (bool, error) {
 	case "FALSE", "NO", "N", "F", "0":
 		return false, nil
 	}
-	return false, errors.New("convert to bool failed")
+	return false, fmt.Errorf("convert to bool failed")
 }
 
 func (s StringConverter) to_int(t reflect.Type, l int) (*reflect.Value, error) {
@@ -165,7 +164,7 @@ func (s StringConverter) to_type(t reflect.Type) (*reflect.Value, error) {
 	case "bool":
 		ret, err = s.ToBool()
 	default:
-		return nil, errors.New("type " + t.String() + " not supported by string converterr")
+		return nil, fmt.Errorf("type %s not supported by string converterr", t.String())
 	}
 	if err != nil {
 		return nil, err
