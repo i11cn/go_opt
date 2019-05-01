@@ -6,6 +6,8 @@ import (
 	"os"
 	"reflect"
 	"strings"
+
+	misc "github.com/i11cn/go_misc"
 )
 
 type (
@@ -33,11 +35,11 @@ func (cp *CommandParser) Parse(cmd ...[]string) error {
 	var cur *flag_info = nil
 	for _, arg := range use {
 		if cur != nil {
-			u := StringConverter(arg)
+			u := misc.StringConverter(arg)
 			if v, err := u.ToType(cur.flag_type); err != nil {
-				return fmt.Errorf("命令行参数 %s 的类型不正确，期望类型是 %s", arg, cur.flag_type.String())
+				return fmt.Errorf("命令行参数 %s 到类型 %s 的转换失败： %s", arg, cur.flag_type.String(), err.Error())
 			} else {
-				cur.value = v
+				cur.value = &v
 				cur.parsed = true
 				cur = nil
 			}
