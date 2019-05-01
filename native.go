@@ -3,6 +3,8 @@ package option
 import (
 	"reflect"
 	"strings"
+
+	misc "github.com/i11cn/go_misc"
 )
 
 type (
@@ -96,10 +98,10 @@ func new_tag_info(t reflect.Type, tag1, tag2 string) (info *flag_info, err error
 	info.is_switch = tag_parser_is_switch(tag1)
 	info.is_option, info.default_str = tag_parser_has_default(tag1)
 	if info.is_option && len(info.default_str) > 0 {
-		u := StringConverter(info.default_str)
-		info.default_val, err = u.ToType(t)
-		if err != nil {
-			info.default_val = nil
+		u := misc.StringConverter(info.default_str)
+		info.default_val = nil
+		if use, err := u.ToType(t); err == nil {
+			info.default_val = &use
 		}
 	}
 	return
