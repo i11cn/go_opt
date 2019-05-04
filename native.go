@@ -97,7 +97,7 @@ func new_tag_info(t reflect.Type, tag1, tag2 string) (info *flag_info, err error
 	info.usage = tag2
 	info.is_switch = tag_parser_is_switch(tag1)
 	info.is_option, info.default_str = tag_parser_has_default(tag1)
-	if info.is_option && len(info.default_str) > 0 {
+	if info.is_option && info.default_str != "" {
 		u := misc.StringConverter(info.default_str)
 		info.default_val = nil
 		if use, err := u.ToType(t); err == nil {
